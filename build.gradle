@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def gdxVersion = '1.13.1'
+
+dependencies {
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// ./gradlew run                                  fair wheel
+// ./gradlew run -PpredeterminedValues=10,70      rigged: always lands on 10 or 70
+// passed as an env var so it survives the macOS -XstartOnFirstThread relaunch
+tasks.register('run', JavaExec) {
+    mainClass = 'com.cedarparkgames.wheelofchance.DesktopLauncher'
+    classpath = sourceSets.main.runtimeClasspath
+    if (project.hasProperty('predeterminedValues')) environment 'PREDETERMINED_VALUES', project.property('predeterminedValues')
+}
